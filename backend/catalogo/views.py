@@ -1,16 +1,9 @@
-from django.http import JsonResponse
+from rest_framework import viewsets
 from .models import Servicio
+from .serializers import ServicioSerializer
 
 
-def servicio_list(request):
-    """Devuelve en JSON los servicios activos."""
-    # .values() entrega cada fila como diccionario {campo: valor}.
-    # Elegimos los campos a exponer: nunca publiques más de lo necesario.
-    servicios = list(
-        Servicio.objects.values(
-            "titulo", "artista", "lanzamiento"
-        )
-    ) # list() fuerza la ejecución de la consulta (QuerySet perezoso)
-
-    # Se envuelve la lista en un objeto para poder agregar metadatos después
-    return JsonResponse({"count": len(servicios), "results": servicios})
+class ServicioViewSet(viewsets.ModelViewSet):
+    """CRUD completo de Servicio: listar, crear, ver, editar y eliminar."""
+    queryset = Servicio.objects.all()
+    serializer_class = ServicioSerializer
