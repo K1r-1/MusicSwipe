@@ -3,7 +3,7 @@
 const formatoCLP = (valor) =>
     Number(valor).toLocaleString("es-CL", { style: "currency", currency: "CLP" });
 
-export default function ServicioList({ servicios }) {
+export default function ServicioList({ servicios, onEditar, onEliminar }) {
  if (servicios.length === 0) {
   return <p className="aviso">Aún no hay servicios registrados.</p>;
 }
@@ -11,7 +11,12 @@ export default function ServicioList({ servicios }) {
 return (
  <table className="tabla">
   <thead>
+    <th>Acciones</th>
    <tr>
+    <td>
+     <button onClick={() => onEditar(s)}>Editar</button>
+     <button onClick={() => onEliminar(s)}>Eliminar</button>
+     </td>
     <th>Titulo</th>
     <th>Artista</th>
     <th>Lanzamiento</th>
@@ -23,7 +28,10 @@ return (
     <tr key={s.id}>
      <td>{s.titulo}</td>
      <td>{s.artista}</td>
-     <td>{s.lanzamiento}   
+     <td>{s.lanzamiento}</td>
+     <td>
+      <button onClick={() => onEditar(s)}>Editar</button>
+      <button onClick={() => onEliminar(s)}>Eliminar</button>
      </td>
     </tr>
     ))}

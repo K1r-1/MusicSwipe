@@ -1,40 +1,47 @@
-import { useCallback, useEffect, useState } from "react";
-import { serviciosApi } from "./api/client";
-import ServicioList from "./components/ServicioList";
-import ServicioForm from "./components/ServicioForm";
-import "./App.css";
-
-
 export default function App() {
   const [servicios, setServicios] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
-  // useCallback mantiene la misma función entre renders (la usa useEffect)
-  const cargar = useCallback(async () => {
-   try {
-    setError(null);
-    setCargando(true);
-    const datos = await serviciosApi.listar();
-    setServicios(datos);
-   } catch (e) {
-    setError("No se pudo cargar la lista. ¿Está encendido el servidor Django?");
-   } finally {
-    setCargando(false); // se ejecuta siempre, haya éxito o error
-  }
-}, []);
+  const [editando, setEditando] = useState(null); // servicio en edición o null
+  
+  const cargar = useCallback(async () => { /* igual que en la Parte E */ }, []);
 
-// Se ejecuta al montar el componente: carga inicial de datos
-useEffect(() => {
-  cargar();
-}, [cargar]);
+  useEffect(() => { cargar(); }, [cargar]);
 
-return (
+  // Tras crear o editar: se cierra el modo edición y se recarga la lista
+  const handleGuardado = () => {
+    setEditando(null);
+    cargar();
+  };
+
+  const handleEliminar = async (servicio) => {
+    // Confirmación antes de una acción que no se puede deshacer
+    if (!window.confirm("¿Eliminar el servicio «" + servicio.nombre + "»?")) return;
+    try {
+      await serviciosApi.eliminar(servicio.id);
+      cargar();
+    } catch (e) {
+      setError("No se pudo eliminar el servicio.");
+    }
+  };
+
+  return (
   <main className="contenedor">
     <h1>Servicios</h1>
-    <ServicioForm servicio={null} onGuardado={cargar} onCancelar={() => {}} />
+    <ServicioForm
+    servicio={editando}
+    onGuardado={handleGuardado}
+    onCancelar={() => setEditando(null)}
+    />
     {cargando && <p className="aviso">Cargando…</p>}
     {error && <p className="aviso error">{error}</p>}
-    {!cargando && !error && <ServicioList servicios={servicios} />}
+    {!cargando && !error && (
+      <ServicioList
+      servicios={servicios}
+      onEditar={setEditando}
+      onEliminar={handleEliminar}
+      />
+      )}
   </main>
  );
 }
