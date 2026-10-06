@@ -11,15 +11,11 @@ export default function ServicioList({ servicios, onEditar, onEliminar }) {
 return (
  <table className="tabla">
   <thead>
-    <th>Acciones</th>
    <tr>
-    <td>
-     <button onClick={() => onEditar(s)}>Editar</button>
-     <button onClick={() => onEliminar(s)}>Eliminar</button>
-     </td>
     <th>Titulo</th>
     <th>Artista</th>
     <th>Lanzamiento</th>
+    <th>Acciones</th>
    </tr>
   </thead>
   <tbody>
