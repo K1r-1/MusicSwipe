@@ -6,3 +6,5 @@ class CancionSerializer(serializers.ModelSerializer):
         model = Cancion
         fields = ["id", "spotify_id", "titulo", "artista"]
         read_only_fields = ["id"]
+
+    

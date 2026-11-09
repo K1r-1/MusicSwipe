@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
 from pathlib import Path
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,6 +27,24 @@ SECRET_KEY = 'django-insecure-ottw5iwu44-)!p1(31s*!bh%$nk5lir!u%$@1jo(g8&b0hhhv+
 DEBUG = True
 
 ALLOWED_HOSTS = []
+
+# AUTH
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
+}
+
+
+# JWT
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME" : timedelta(minutes=30),
+    "REFRESH_TOKEN_LIFETIME" : timedelta(days=1),
+}
 
 
 # Application definition
