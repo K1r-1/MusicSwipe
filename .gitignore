@@ -158,6 +158,8 @@ ENV/
 env.bak/
 venv.bak/
 .venv/
+.env.*
+!.env.example
 
 # Spyder project settings
 .spyderproject
@@ -220,7 +222,7 @@ __marimo__/
 .streamlit/secrets.toml
 
 # --- Node / React ---
-frontend/node_modules/
+node_modules/
 frontend/dist/
 
 # --- Secretos y entorno local ---
