@@ -3,14 +3,15 @@ import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { iniciarSesion } from './api/auth';
+import ListaCanciones from './components/ListaCanciones';
 
 
 function App() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [tokens, setTokens] = useState(null);
-  const [cargando, setCargando] = useState(false);
-  const [error, setError] = useState('');
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [tokens, setTokens] = useState(null)
+  const [cargando, setCargando] = useState(false)
+  const [error, setError] = useState('')
 
   async function manejarLogin(evento) {
     evento.preventDefault()
@@ -34,52 +35,69 @@ function App() {
       }
     }
 
+  function cerrarSesion() {
+    setTokens(null)
+    setUsername('')
+    setPassword('')
+    setError('')
+  }
+
   return (
     <main className="container py-4">
       <h1>MusicSwipe</h1>
       
       {tokens ? (
+        <> 
+          <Alert variant="success"> 
+            Sesión iniciada correctamente.
+          </Alert>
+          
+          <Button
+            variant="secondary"
+            onClick={cerrarSesion}
+            className="mb-3">
+            Cerrar sesión
+          </Button>
+          
+          <ListaCanciones accessToken={tokens.access}/>        
+        </>
+          ) : (
+            <Form onSubmit={manejarLogin}>
+              <h2> Iniciar sesión</h2>
 
-        <Alert variant="success"> 
-         Sesión iniciada correctamente.
-        </Alert>
-        ) : (
-          <Form onSubmit={manejarLogin}>
-            <h2> Iniciar sesión</h2>
-
-            <Form.Group className="mb-3" controlId="login-username">
-              <Form.Label> Usuario</Form.Label>
-              <Form.Control
-               type="text"
-               autoComplete="username"
-               value={username}
-               onChange={(evento) => setUsername(evento.target.value)}
-               required
-               disabled={cargando}
-               />
-            </Form.Group>
-
-            <Form.Group className="mb-3" controlId="login-password">
-              <Form.Label>Contraseña</Form.Label>
-              <Form.Control
-                type="password"
-                autoComplete="current-password"
-                value={password}
-                onChange={(evento) => setPassword(evento.target.value)}
+              <Form.Group className="mb-3" controlId="login-username">
+                <Form.Label> Usuario</Form.Label>
+                <Form.Control
+                type="text"
+                autoComplete="username"
+                value={username}
+                onChange={(evento) => setUsername(evento.target.value)}
                 required
                 disabled={cargando}
-            />
-            </Form.Group>
+                />
+              </Form.Group>
 
-            {error && <Alert variant="danger">{error}</Alert>}
+              <Form.Group className="mb-3" controlId="login-password">
+                <Form.Label>Contraseña</Form.Label>
+                <Form.Control
+                  type="password"
+                  autoComplete="current-password"
+                  value={password}
+                  onChange={(evento) => setPassword(evento.target.value)}
+                  required
+                  disabled={cargando}
+              />
+              </Form.Group>
 
-            <Button type="submit" disabled={cargando}>
-              {cargando ? 'Ingresando...' : 'Ingresar'}
-            </Button>
-          </Form>
-        )}
+              {error && <Alert variant="danger">{error}</Alert>}
+
+              <Button type="submit" disabled={cargando}>
+                {cargando ? 'Ingresando...' : 'Ingresar'}
+              </Button>
+            </Form>
+          )}
     </main>
-  );
+  )
 }
 
-export default App;
+export default App

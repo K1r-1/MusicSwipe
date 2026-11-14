@@ -159,7 +159,7 @@ env.bak/
 venv.bak/
 .venv/
 .env.*
-!.e2nv.example
+!.env.example
 
 # Spyder project settings
 .spyderproject
@@ -230,3 +230,5 @@ frontend/dist/
 backend/.venv/
 backend/db.sqlite3
 
+db.sqlite3-wal
+db.sqlite3-shm
