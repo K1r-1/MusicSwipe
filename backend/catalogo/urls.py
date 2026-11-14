@@ -2,7 +2,7 @@ from django.urls import path
 from rest_framework_simplejwt.views import (
     TokenObtainPairView, TokenRefreshView
     )
-from . import views
+from . import views, spotify_views
 
 
 urlpatterns = [
@@ -12,5 +12,8 @@ urlpatterns = [
     path("token/", TokenObtainPairView.as_view()),
     path("token/refresh", TokenRefreshView.as_view()),
     path("registro/", views.RegistroView.as_view(), name='registro'),
-    path("guardadas/", views.canciones_guardadas_list, name="canciones-guardadas-list",),
-]
+    path("guardadas/", views.canciones_guardadas_list, name="canciones-guardadas-list"),
+    path("spotify/conectar/", spotify_views.spotify_conectar, name="spotify-conectar"),
+    path("spotify/callback/", spotify_views.spotify_callback, name="spotify-callback"),
+    path("spotify/token/", spotify_views.spotify_token, name="spotify-token"),
+    ]

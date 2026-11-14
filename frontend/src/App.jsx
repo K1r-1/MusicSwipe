@@ -4,6 +4,7 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { iniciarSesion } from './api/auth';
 import ListaCanciones from './components/ListaCanciones';
+import ConectarSpotify from './components/ConectarSpotify';
 
 
 function App() {
@@ -58,8 +59,10 @@ function App() {
             className="mb-3">
             Cerrar sesión
           </Button>
-          
-          <ListaCanciones accessToken={tokens.access}/>        
+
+          <ConectarSpotify accessToken={tokens.access}/>
+          <ListaCanciones accessToken={tokens.access}/>   
+               
         </>
           ) : (
             <Form onSubmit={manejarLogin}>
