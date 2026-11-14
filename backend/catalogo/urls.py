@@ -11,5 +11,6 @@ urlpatterns = [
     path("canciones/<int:pk>/", views.cancion_detail, name="cancion-detail"),
     path("token/", TokenObtainPairView.as_view()),
     path("token/refresh", TokenRefreshView.as_view()),
-    path("registro/", views.RegistroView.as_view(), name='registro')
+    path("registro/", views.RegistroView.as_view(), name='registro'),
+    path("guardadas/", views.canciones_guardadas_list, name="canciones-guardadas-list",),
 ]
