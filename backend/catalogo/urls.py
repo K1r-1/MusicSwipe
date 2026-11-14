@@ -6,13 +6,11 @@ from . import views, spotify_views
 
 
 urlpatterns = [
-    path("servicios/", views.servicio_list, name="servicio-list"),
     path("canciones/", views.cancion_list, name="cancion-list"),
     path("canciones/<int:pk>/", views.cancion_detail, name="cancion-detail"),
     path("token/", TokenObtainPairView.as_view()),
     path("token/refresh", TokenRefreshView.as_view()),
     path("registro/", views.RegistroView.as_view(), name='registro'),
-    path("guardadas/", views.canciones_guardadas_list, name="canciones-guardadas-list"),
     path("spotify/conectar/", spotify_views.spotify_conectar, name="spotify-conectar"),
     path("spotify/callback/", spotify_views.spotify_callback, name="spotify-callback"),
     path("spotify/token/", spotify_views.spotify_token, name="spotify-token"),

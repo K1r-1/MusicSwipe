@@ -25,7 +25,10 @@ SPOTIFY_REDIRECT_URI = os.environ["SPOTIFY_REDIRECT_URI"]
 
 SPOTIFY_SCOPES = [
     "streaming",
+    "user-read-email",
+    "user-read-private",
     "user-modify-playback-state",
+    "user-library-modify",
 ]
 
 CORS_ALLOW_CREDENTIALS = True

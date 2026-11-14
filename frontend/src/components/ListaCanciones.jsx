@@ -2,7 +2,10 @@ import {useEffect, useState} from 'react';
 import Alert from 'react-bootstrap/Alert';
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
-import {listarCanciones, guardarCancion} from '../api/canciones';
+import {listarCanciones } from '../api/canciones';
+import {guardarEnSpotify} from '../api/spotify';
+import ReproductorSpotify from './ReproductorSpotify'
+import './ListaCanciones.css'
 
 export default function ListaCanciones({accessToken}) {
     const [canciones, setCanciones] = useState([])
@@ -12,6 +15,7 @@ export default function ListaCanciones({accessToken}) {
     const [guardandoId, setGuardandoId] = useState(null)
     const [mensajeGuardado, setMensajeGuardado] = useState('')
     const [errorGuardado, setErrorGuardado] = useState('')
+    const [cambiandoAudio, setCambiandoAudio] = useState(false)
 
     useEffect(() => {
         let activo = true
@@ -58,39 +62,36 @@ export default function ListaCanciones({accessToken}) {
     }
 
     function manejarPasar() {
-        if (!cancionActual || guardandoId !== null) return
+        if (!cancionActual || guardandoId !== null || cambiandoAudio) return
         
         setMensajeGuardado('')
         setErrorGuardado('')
         avanzarCancion()
     }
 
-    async function manejarMeGusta(cancionId) {
-        setGuardandoId(cancionId)
+    async function manejarMeGusta() {
+        if (!cancionActual || guardandoId !== null || cambiandoAudio) return
+
+        const cancion = cancionActual
+
+        setGuardandoId(cancion.id)
         setMensajeGuardado('')
         setErrorGuardado('')
 
-        if (guardandoId !== null) return
-
         try {
-            await guardarCancion(accessToken, cancionId)
-            setMensajeGuardado('Canción guardada correctamente.')
+            await guardarEnSpotify(accessToken, cancion.spotify_id)
+
+            setMensajeGuardado(`"${cancion.titulo}" se guardó en Tus me gusta de Spotify.`)
             avanzarCancion()
         } catch (err) {
             if (err.response?.status === 401) {
-                setErrorGuardado('Tu sesión no es válida o ha expirado.')
-            } else if (err.response?.status === 400) {
-                const datos = err.response.data
-
-                setErrorGuardado(
-                    datos.detail ??
-                    datos.cancion_id?.[0] ??
-                    'No se pudo guardar la canción.',
-                )
-            } else if (!err.response) {
-                setErrorGuardado('No se pudo conectar con el servidor.')
+            setErrorGuardado('Vuelve a iniciar sesión en MusicSwipe.')
             } else {
-                setErrorGuardado('No se pudo guardar la canción')
+            setErrorGuardado(
+                err.response?.data?.detail ??
+                err.message ??
+                'No se pudo guardar la canción en Spotify.',
+                )
             }
         } finally {
             setGuardandoId(null)
@@ -106,8 +107,14 @@ export default function ListaCanciones({accessToken}) {
     }
 
     return (
-        <section>
+        <section className="descubrimiento">
             <h2>Descubrir Música</h2>
+
+            <ReproductorSpotify
+                accessToken={accessToken}
+                spotifyId={cancionActual?.spotify_id}
+                onOcupado={setCambiandoAudio}
+            />
 
             {mensajeGuardado && ( 
                 <Alert variant="success">{mensajeGuardado}</Alert>
@@ -124,22 +131,30 @@ export default function ListaCanciones({accessToken}) {
                     Ya revisaste todas las canciones disponibles.
                 </Alert>
             ) : (
-                <Card calssName="mx-auto" style={{maxWidth: '26rem'}}>
+                <Card className="mx-auto" style={{maxWidth: '26rem'}}>
                     <Card.Body>
                         <Card.Title>{cancionActual.titulo}</Card.Title>
 
                         <Card.Text>{cancionActual.artista}</Card.Text>
 
+                        <a
+                            href={`https://open.spotify.com/track/${cancionActual.spotify_id}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            Abrir en Spotify
+                        </a>
+
                         <p className="mb-3">
                             Canción {indiceActual + 1} de {canciones.length}
                         </p>
                         
-                        <div className="d-flex justify-content-center g ap-3">
+                        <div className="d-flex justify-content-center gap-3">
                             <Button 
                             type="button"
                             variant="outline-secondary"
                             onClick={manejarPasar}
-                            disabled={guardandoId !== null}
+                            disabled={guardandoId !== null || cambiandoAudio}
                             >
                                 Pasar
                             </Button>
@@ -147,8 +162,8 @@ export default function ListaCanciones({accessToken}) {
                             <Button
                             type="button"
                             variant="success"
-                            onClick={() => manejarMeGusta(cancionActual.id)}
-                            disabled={guardandoId !== null}
+                            onClick={manejarMeGusta}
+                            disabled={guardandoId !== null || cambiandoAudio}
                             >
                                 {guardandoId !== null ? 'Guardando...' : 'Me gusta'}
                             </Button>

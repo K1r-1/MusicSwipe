@@ -5,9 +5,8 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.validators import UniqueValidator 
 from django.contrib.auth import get_user_model
-from .models import Servicio, Cancion, CancionGuardada
-from .serializers import CancionSerializer, CancionGuardadaSerializer, GuardarCancionSerializer
-from django.http import JsonResponse
+from .models import Cancion
+from .serializers import CancionSerializer
 
 
 User = get_user_model()
@@ -53,38 +52,6 @@ def cancion_detail(request, pk):
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@api_view(["GET", "POST"])
-@permission_classes([IsAuthenticated])
-def canciones_guardadas_list(request):
-    if request.method == "GET":
-        guardadas = (
-            CancionGuardada.objects.filter(usuario=request.user).select_related("cancion")
-        )
-
-        serializer = CancionGuardadaSerializer(guardadas, many=True)
-        return Response(serializer.data)
-
-    entrada = GuardarCancionSerializer(data=request.data)
-    entrada.is_valid(raise_exception=True)
-
-    guardada, creada = CancionGuardada.objects.get_or_create(
-        usuario=request.user,
-        cancion=entrada.validated_data["cancion"],
-    )
-
-    if not creada:
-        return Response(
-            {"detail": "Esta canción ya está guardada."},
-            status=status.HTTP_400_BAD_REQUEST
-        )
-    
-    salida = CancionGuardadaSerializer(guardada)
-
-    return Response(
-        salida.data,
-        status=status.HTTP_201_CREATED
-    )
-
 class RegistroSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, min_length=8)
     email = serializers.EmailField(required=True, 
@@ -103,17 +70,5 @@ class RegistroView(generics.CreateAPIView):
     serializer_class = RegistroSerializer
     permission_classes = [AllowAny] # Permite crear cuenta sin haber iniciado sesión
 
-def servicio_list(request):
-    """Devuelve en JSON los servicios activos."""
-    # .values() entrega cada fila como diccionario {campo: valor}.
-    # Elegimos los campos a exponer: nunca publiques más de lo necesario.
-    servicios = list(
-        Servicio.objects.values(
-            "titulo", "artista", "lanzamiento"
-        )
-    ) # list() fuerza la ejecución de la consulta (QuerySet perezoso)
-
-    # Se envuelve la lista en un objeto para poder agregar metadatos después
-    return JsonResponse({"count": len(servicios), "results": servicios})
 
 
