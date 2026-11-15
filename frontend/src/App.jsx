@@ -5,6 +5,7 @@ import Form from 'react-bootstrap/Form';
 import { iniciarSesion } from './api/auth';
 import ListaCanciones from './components/ListaCanciones';
 import ConectarSpotify from './components/ConectarSpotify';
+import CatalogoCanciones from './components/CatalogoCanciones';
 
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
   const [tokens, setTokens] = useState(null)
   const [cargando, setCargando] = useState(false)
   const [error, setError] = useState('')
+  const [vista, setVista] = useState('descubrir')
 
   async function manejarLogin(evento) {
     evento.preventDefault()
@@ -40,6 +42,7 @@ function App() {
     setTokens(null)
     setUsername('')
     setPassword('')
+    setVista('descubrir')
     setError('')
   }
 
@@ -60,9 +63,32 @@ function App() {
             Cerrar sesión
           </Button>
 
-          <ConectarSpotify accessToken={tokens.access}/>
-          <ListaCanciones accessToken={tokens.access}/>   
-               
+          <div className="d-flex justify-content-center gap-2 mb-4">
+          <Button
+            type="button"
+            variant={vista === 'descubrir' ? 'primary' : 'outline-primary'}
+            onClick={() => setVista('descubrir')}
+          >
+            Descubrir
+          </Button>
+
+          <Button
+            type="button"
+            variant={vista === 'catalogo' ? 'primary' : 'outline-primary'}
+            onClick={() => setVista('catalogo')}
+          >
+            Catálogo
+          </Button>
+          </div>
+
+          {vista === 'descubrir' ? (
+            <>
+              <ConectarSpotify accessToken={tokens.access} />
+              <ListaCanciones accessToken={tokens.access} />
+            </>
+          ) : (
+            <CatalogoCanciones accessToken={tokens.access} />
+          )}
         </>
           ) : (
             <Form onSubmit={manejarLogin}>
