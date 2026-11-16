@@ -1,0 +1,28 @@
+.descubrimiento {
+  width: 100%;
+  padding: 1rem 0 3rem;
+}
+
+.tarjeta-cancion {
+  width: min(100%, 32rem);
+  min-height: 26rem;
+  margin: 1.5rem auto;
+  border-radius: 1.5rem;
+  overflow: hidden;
+}
+
+.tarjeta-cancion .card-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1rem;
+  padding: clamp(1.5rem, 5vw, 3rem);
+}
+
+.tarjeta-cancion .card-title {
+  font-size: clamp(1.75rem, 5vw, 2.5rem);
+}
+
+.tarjeta-cancion .card-text {
+  font-size: 1.2rem;
+}

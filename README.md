@@ -1,44 +1,97 @@
-# musicaProyectoWeb
-Repositorio Proyecto Web
+# MusicSwipe
 
-INVESTIGACIÓN
+MusicSwipe permite escuchar canciones, pasar a la siguiente y guardar las que te gusten en Spotify. También tiene un catálogo donde se pueden agregar, editar y eliminar canciones.
+Desarrollado con React, Django REST Framework y SQLite.
 
-E1 
+## Requisitos
 
-1. Estrategias
+- Python y Node.js instalados.
+- Una aplicación creada en Spotify for Developers.
+- Una cuenta Spotify Premium para reproducir música.
 
-¿Qué formas existen de combinar React con Django? 
+## Configuración de Spotify
 
-(a) React como aplicación independiente que consume la API
-Tanto React como Django funcionan independientemente una de la otra. React gestiona todo lo que es interfaz y enrutamiento como una SPA (Single-page app) de forma dinámica. Django actúa como una API que envía datos en formato JSON ante peticiones HTTP, permitiendo una comunicación más efectiva.
+En el panel de Spotify, habilitar Web API y Web Playback SDK.
 
-https://react.dev/learn/build-a-react-app-from-scratch#data-fetching
-https://docs.djangoproject.com/en/6.1/ref/request-response/
+Agregar esta dirección en Redirect URIs:
 
-(b) Django sirviendo el build de React
-React se compila mediante npm run build lo que genera un conjunto de archivos optimizados para un servicio de hosting estático. En este contexto, Django se configura para servir los archivos estáticos, actuando como un servidor web que entrega los recursos estáticos como un paquete preconstruido al navegador.
+```text
+http://127.0.0.1:8000/api/spotify/callback/
+```
 
-https://vite.dev/guide/build
-https://docs.djangoproject.com/en/6.1/howto/static-files/deployment/
+Copiar el Client ID y el Client Secret para configurar el backend.
 
-(c) Plantillas de Django con React embebido
-En este contexto React no actúa como una SPA sino que sus componentes son inyectados en las vistas de servidor de Django. Django-Vite es una integración que permite generar esta conexión en la que React está embebido en las plantillas de Django mediante template tags que se introducen en el HTML. 
+## Backend
 
+Desde la carpeta principal del proyecto:
 
-https://vite.dev/guide/backend-integration
-https://pypi.org/project/django-vite/
+```powershell
+cd backend
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+Copy-Item .env.example .env
+```
 
-2. Desarrollo
+Abrir `backend/.env` y completar las credenciales de Spotify.
 
-El origen de una página es la combinación de protocolo, dominio y el puerto. 
-Sitios que coinciden en esta combinación son del mismo origen. Si alguno de estos es diferente se le considera de origen distinto.
+Después ejecutar:
 
-La política de mismo origen es un mecanismo de seguridad que restringe como un documento o script cargado desde un origen interactúa con recursos de otro origen evitando posibles manipulación o lectura no deseadas.
+```powershell
+python manage.py migrate
+python manage.py createsuperuser
+python manage.py runserver
+```
 
-Dado que Django y React utilizan puertos distintos (8000 y 5173). Al momento de realizar una petición HTTP hacia la API, el navegador se encarga de revisar el origen y dado que los puertos difieren, se bloquea la lectura de la respuesta. 
+El usuario creado se utiliza para iniciar sesión en MusicSwipe.
 
+## Frontend
 
-https://developer.mozilla.org/en-US/docs/Glossary/Origin
-https://developer.mozilla.org/en-US/docs/Web/Security/Defenses/Same-origin_policy
+Abrir otra terminal desde la carpeta principal:
 
+```powershell
+cd frontend
+npm install
+Copy-Item .env.example .env
+npm run dev
+```
 
+Abrir:
+
+```text
+http://127.0.0.1:5173
+```
+
+Ambos servidores deben permanecer ejecutándose.
+
+## Uso
+
+1. Iniciar sesión.
+2. Entrar en Catálogo para agregar canciones con su ID de Spotify, título y artista.
+3. Desde el catálogo también se pueden editar y eliminar canciones.
+4. Entrar en Descubrir y pulsar Conectar Spotify.
+5. Completar la autorización y volver a MusicSwipe.
+6. Pulsar Preparar reproductor y después Escuchar tarjeta.
+7. Usar Me gusta para guardar en Spotify o Pasar para avanzar sin guardar.
+
+El ID de una canción está entre `/track/` y `?` en su enlace de Spotify.
+
+El catálogo se guarda en SQLite. Las canciones marcadas con Me gusta se guardan en la cuenta de Spotify.
+
+En una instalación nueva, el catálogo comienza vacío.
+
+## Variables de entorno
+
+`backend/.env`:
+
+```env
+SPOTIFY_CLIENT_ID=tu_client_id
+SPOTIFY_CLIENT_SECRET=tu_client_secret
+SPOTIFY_REDIRECT_URI=http://127.0.0.1:8000/api/spotify/callback/
+```
+
+`frontend/.env`:
+
+```env
+VITE_API_URL=http://127.0.0.1:8000/api/
+```

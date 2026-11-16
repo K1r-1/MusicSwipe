@@ -15,7 +15,7 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
+/lib/
 lib64/
 parts/
 sdist/
@@ -230,3 +230,5 @@ frontend/dist/
 backend/.venv/
 backend/db.sqlite3
 
+db.sqlite3-wal
+db.sqlite3-shm

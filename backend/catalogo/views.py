@@ -1,14 +1,13 @@
 from rest_framework import serializers, generics, status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.generics import get_object_or_404
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.validators import UniqueValidator 
 from django.contrib.auth import get_user_model
 from .models import Cancion
 from .serializers import CancionSerializer
-from django.http import JsonResponse
-from .models import Servicio
+
 
 User = get_user_model()
 
@@ -53,7 +52,6 @@ def cancion_detail(request, pk):
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
 class RegistroSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, min_length=8)
     email = serializers.EmailField(required=True, 
@@ -72,15 +70,5 @@ class RegistroView(generics.CreateAPIView):
     serializer_class = RegistroSerializer
     permission_classes = [AllowAny] # Permite crear cuenta sin haber iniciado sesión
 
-def servicio_list(request):
-    """Devuelve en JSON los servicios activos."""
-    # .values() entrega cada fila como diccionario {campo: valor}.
-    # Elegimos los campos a exponer: nunca publiques más de lo necesario.
-    servicios = list(
-        Servicio.objects.values(
-            "titulo", "artista", "lanzamiento"
-        )
-    ) # list() fuerza la ejecución de la consulta (QuerySet perezoso)
 
-    # Se envuelve la lista en un objeto para poder agregar metadatos después
-    return JsonResponse({"count": len(servicios), "results": servicios})
+
